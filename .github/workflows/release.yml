@@ -12,9 +12,6 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Install zip
-        run: sudo apt install zip
-
       - name: Get latest code
         uses: actions/checkout@v4
 
@@ -33,11 +30,9 @@ jobs:
 
       - name: Bundle files
         run: |
-          mkdir -p ./temp/pulsar-games
-          cp ./{README.md,fxmanifest.lua,config.lua,demo_games.lua} ./temp/pulsar-games
-          cp -r ./{client,server,ui} ./temp/pulsar-games
-          rm -rf ./temp/pulsar-games/ui/node_modules
-          cd ./temp && zip -r ../pulsar-games.zip ./pulsar-games
+          mkdir -p staging/pulsar-games
+          rsync -a --exclude='.github' --exclude='node_modules' --exclude='staging' . staging/pulsar-games/
+          cd staging && zip -r ../pulsar-games.zip pulsar-games/
 
       - name: Create release
         uses: softprops/action-gh-release@v2

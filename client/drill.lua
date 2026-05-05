@@ -107,11 +107,11 @@ end
 
 local function DrillingInit()
 	if DrillingScaleform then
-		exports['pulsar-core']:ScaleformUnloadMovie(DrillingScaleform)
+		exports['pulsar-games']:ScaleformUnloadMovie(DrillingScaleform)
 	end
 
 	LoadAnim("anim@heists@fleeca_bank@drilling")
-	DrillingScaleform = exports['pulsar-core']:ScaleformLoadMovie("DRILLING")
+	DrillingScaleform = exports['pulsar-games']:ScaleformLoadMovie("DRILLING")
 
 	DrillingSpeed = 0.0
 	DrillingPos = 0.0
@@ -153,10 +153,10 @@ local function DrillingInit()
 
 	CreateAndAttachProp()
 
-	exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", 0.0)
-	exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", 0.0)
-	exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", 0.0)
-	exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_HOLE_DEPTH", 0.0)
+	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", 0.0)
+	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", 0.0)
+	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", 0.0)
+	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_HOLE_DEPTH", 0.0)
 
 	TaskPlayAnim(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 8.0, 8.0, -1, 33)
 end
@@ -250,10 +250,10 @@ exports("DrillingHandleControls", function()
 				DrillingTemp =
 					math.min(1.0, DrillingTemp + ((0.05 * GetFrameTime()) * (DrillingSpeed * 10)))
 			end
-			exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+			exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
 		else
 			if DrillingPos < 0.1 or DrillingPos < DrillingHoleDepth then
-				exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+				exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
 			else
 				if DrillingPos >= DrillingHoleDepth then
 					DrillingTemp = math.min(1.0, DrillingTemp + (0.01 * GetFrameTime()))
@@ -272,16 +272,16 @@ exports("DrillingHandleControls", function()
 		end
 
 		if DrillingPos ~= DrillingHoleDepth then
-			exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+			exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
 		end
 	end
 
 	if last_speed ~= DrillingSpeed then
-		exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", DrillingSpeed)
+		exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", DrillingSpeed)
 	end
 
 	if last_temp ~= DrillingTemp then
-		exports['pulsar-core']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", DrillingTemp)
+		exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", DrillingTemp)
 	end
 
 	if DrillingTemp >= 1.0 then
