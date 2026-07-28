@@ -5,7 +5,7 @@ export default {
         /// #endif
 
         /* eslint-disable no-unreachable */
-        return fetch(`https://pulsar-games/${event}`, {
+        return fetch(`https://pulsar_games/${event}`, {
             method: 'post',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

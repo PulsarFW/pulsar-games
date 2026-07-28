@@ -149,7 +149,9 @@ export default ({ game }) => {
                 <BorderLinearProgress
                     variant="determinate"
                     classes={{
+                        determinate: classes.progressbar,
                         bar: classes.progressbar,
+                        bar1: classes.progressbar,
                     }}
                     style={{ transition: 'none !important' }}
                     value={finished || failed ? 100 : (curr / game.timer) * 100}

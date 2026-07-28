@@ -1,12 +1,15 @@
-local DrillingSounds = {
+Drilling = {}
+
+Drilling.Sounds = {
 	Playing = false,
 	Sound = nil,
 	PinSound = nil,
 	FailSound = nil,
 }
 
-local DrillingPins = nil
-local DrillingDisabledControls = { 30, 31, 32, 33, 34, 35 }
+Drilling.Pins = nil
+
+Drilling.DisabledControls = { 30, 31, 32, 33, 34, 35 }
 
 function loadModel(model)
 	if IsModelInCdimage(model) then
@@ -24,23 +27,23 @@ function LoadAnim(dict)
 	end
 end
 
-function DrillAnim()
+function ShittyDrillAnim()
 	if
-		DrillingSpeed <= 0
-		and not IsEntityPlayingAnim(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 3)
+		Drilling.DrillSpeed <= 0
+		and not IsEntityPlayingAnim(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 3)
 	then
-		TaskPlayAnim(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 8.0, 8.0, -1, 33)
+		TaskPlayAnim(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 8.0, 8.0, -1, 33)
 	elseif
-		DrillingSpeed > 0
+		Drilling.DrillSpeed > 0
 		and not IsEntityPlayingAnim(
-			LocalPlayer.state.ped,
+			PlayerPedId(),
 			"anim@heists@fleeca_bank@drilling",
 			"drill_straight_start",
 			3
 		)
 	then
 		TaskPlayAnim(
-			LocalPlayer.state.ped,
+			PlayerPedId(),
 			"anim@heists@fleeca_bank@drilling",
 			"drill_straight_start",
 			8.0,
@@ -51,13 +54,13 @@ function DrillAnim()
 	end
 end
 
-function HandleDrillingFailure()
+function YouFuckingSuck()
 	local waitTime = math.random(5000, 10000)
-	StopAnimTask(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_start")
-	StopAnimTask(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_idle")
+	StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_start")
+	StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle")
 	Wait(50)
 	TaskPlayAnim(
-		LocalPlayer.state.ped,
+		PlayerPedId(),
 		"anim@heists@fleeca_bank@drilling",
 		"drill_straight_fail",
 		8.0,
@@ -65,26 +68,26 @@ function HandleDrillingFailure()
 		waitTime,
 		33
 	)
-	StopSound(DrillingSounds.Sound)
+	StopSound(Drilling.Sounds.Sound)
 
-	PlaySoundFrontend(DrillingSounds.FailSound, "Drill_Jam", "DLC_HEIST_FLEECA_SOUNDSET", true)
+	PlaySoundFrontend(Drilling.Sounds.FailSound, "Drill_Jam", "DLC_HEIST_FLEECA_SOUNDSET", true)
 	--ToggleDrillParticleFx( false, _drillPropHandle, ref _drillFx );
 	Wait(waitTime)
-	StopSound(DrillingSounds.FailSound)
+	StopSound(Drilling.Sounds.FailSound)
 end
 
-function CreateAndAttachProp()
+function CreateAndAttchProp()
 	loadModel(GetHashKey("hei_prop_heist_drill"))
 
-	local myPos = GetEntityCoords(LocalPlayer.state.ped)
+	local myPos = GetEntityCoords(PlayerPedId())
 	local prop = CreateObject(GetHashKey("hei_prop_heist_drill"), myPos.x, myPos.y, myPos.z, true, false, false)
 	FreezeEntityPosition(prop, true)
 	SetEntityCollision(prop, false, false)
 
 	AttachEntityToEntity(
 		prop,
-		LocalPlayer.state.ped,
-		GetPedBoneIndex(LocalPlayer.state.ped, 28422),
+		PlayerPedId(),
+		GetPedBoneIndex(PlayerPedId(), 28422),
 		0,
 		0,
 		0,
@@ -102,23 +105,31 @@ function CreateAndAttachProp()
 
 	SetModelAsNoLongerNeeded(GetHashKey("hei_prop_heist_drill"))
 
-	DrillingProp = prop
+	Drilling.DrillProp = prop
 end
 
-local function DrillingInit()
-	if DrillingScaleform then
-		exports['pulsar-games']:ScaleformUnloadMovie(DrillingScaleform)
+Drilling.Start = function(callback)
+	if not Drilling.Active then
+		Drilling.Active = true
+		Drilling.Init()
+		Drilling.Update(callback)
+	end
+end
+
+Drilling.Init = function()
+	if Drilling.Scaleform then
+		Scaleforms.UnloadMovie(Drilling.Scaleform)
 	end
 
 	LoadAnim("anim@heists@fleeca_bank@drilling")
-	DrillingScaleform = exports['pulsar-games']:ScaleformLoadMovie("DRILLING")
+	Drilling.Scaleform = Scaleforms.LoadMovie("DRILLING")
 
-	DrillingSpeed = 0.0
-	DrillingPos = 0.0
-	DrillingTemp = 0.0
-	DrillingHoleDepth = 0.0
+	Drilling.DrillSpeed = 0.0
+	Drilling.DrillPos = 0.0
+	Drilling.DrillTemp = 0.0
+	Drilling.HoleDepth = 0.0
 
-	DrillingPins = {
+	Drilling.Pins = {
 		Pin1 = {
 			Position = 0.325,
 			Broken = false,
@@ -137,174 +148,166 @@ local function DrillingInit()
 		},
 	}
 
-	DrillingSounds.Sound = GetSoundId()
-	DrillingSounds.PinSound = GetSoundId()
-	DrillingSounds.FailSound = GetSoundId()
+	Drilling.Sounds.Sound = GetSoundId()
+	Drilling.Sounds.PinSound = GetSoundId()
+	Drilling.Sounds.FailSound = GetSoundId()
 
 	RequestAmbientAudioBank("HEIST_FLEECA_DRILL")
 	RequestAmbientAudioBank("HEIST_FLEECA_DRILL_2")
-	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL")
-	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2")
-	RequestAmbientAudioBank("SAFE_CRACK")
-	RequestAmbientAudioBank("HUD_MINI_GAME_SOUNDSET")
-	RequestAmbientAudioBank("dlc_heist_fleeca_bank_door_sounds")
+	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL") 
+	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2") 
+	RequestAmbientAudioBank("SAFE_CRACK") 
+	RequestAmbientAudioBank("HUD_MINI_GAME_SOUNDSET") 
+	RequestAmbientAudioBank("dlc_heist_fleeca_bank_door_sounds") 
 	RequestAmbientAudioBank("vault_door")
 	RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET")
 
-	CreateAndAttachProp()
+	CreateAndAttchProp()
 
-	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", 0.0)
-	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", 0.0)
-	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", 0.0)
-	exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_HOLE_DEPTH", 0.0)
+	Scaleforms.PopFloat(Drilling.Scaleform, "SET_SPEED", 0.0)
+	Scaleforms.PopFloat(Drilling.Scaleform, "SET_DRILL_POSITION", 0.0)
+	Scaleforms.PopFloat(Drilling.Scaleform, "SET_TEMPERATURE", 0.0)
+	Scaleforms.PopFloat(Drilling.Scaleform, "SET_HOLE_DEPTH", 0.0)
 
-	TaskPlayAnim(LocalPlayer.state.ped, "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 8.0, 8.0, -1, 33)
+	TaskPlayAnim(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 8.0, 8.0, -1, 33)
 end
 
-local function DrillingUpdate(callback)
+Drilling.Update = function(callback)
 	FreezeEntityPosition(PlayerPedId(), true)
-	while DrillingActive do
-		exports['pulsar-games']:DrillingDraw()
-		DrillAnim()
-		--exports['pulsar-games']:DrillingDisableControls()
+	while Drilling.Active do
+		Drilling.Draw()
+		ShittyDrillAnim()
+		--Drilling.DisableControls()
 
-		for k, v in pairs(DrillingPins) do
-			if not v.Broken and DrillingPos >= v.Position then
-				PlaySoundFrontend(DrillingSounds.PinSound, "Drill_Pin_Break", "DLC_HEIST_FLEECA_SOUNDSET", true)
-				DrillingPins[k].Broken = true
+		for k, v in pairs(Drilling.Pins) do
+			if not v.Broken and Drilling.DrillPos >= v.Position then
+				PlaySoundFrontend(Drilling.Sounds.PinSound, "Drill_Pin_Break", "DLC_HEIST_FLEECA_SOUNDSET", true)
+				Drilling.Pins[k].Broken = true
 			end
 		end
 
-		if DrillingSpeed > 0 and DrillingSounds.Playing then
-			SetVariableOnSound(DrillingSounds.Sound, "DrillState", 0)
-		elseif DrillingSpeed > 0 and not DrillingSounds.Playing then
+		if Drilling.DrillSpeed > 0 and Drilling.Sounds.Playing then
+			SetVariableOnSound(Drilling.Sounds.Sound, "DrillState", 0)
+		elseif Drilling.DrillSpeed > 0 and not Drilling.Sounds.Playing then
 			PlaySoundFromEntity(
-				DrillingSounds.Sound,
+				Drilling.Sounds.Sound,
 				"Drill",
-				DrillingProp,
+				Drilling.DrillProp,
 				"DLC_HEIST_FLEECA_SOUNDSET",
 				false,
 				0
 			)
-			DrillingSounds.Playing = true
-		elseif DrillingSpeed <= 0 and DrillingSounds.Playing then
-			StopSound(DrillingSounds.Sound)
-			DrillingSounds.Playing = false
+			Drilling.Sounds.Playing = true
+		elseif Drilling.DrillSpeed <= 0 and Drilling.Sounds.Playing then
+			StopSound(Drilling.Sounds.Sound)
+			Drilling.Sounds.Playing = false
 		end
 
-		exports['pulsar-games']:DrillingHandleControls()
+		Drilling.HandleControls()
 
 		Wait(0)
 	end
 
 	FreezeEntityPosition(PlayerPedId(), false)
-	DeleteEntity(DrillingProp)
-	DrillingProp = nil
-	callback(DrillingResult)
+	DeleteEntity(Drilling.DrillProp)
+	Drilling.DrillProp = nil
+	callback(Drilling.Result)
 end
 
-exports("DrillingStart", function(callback)
-	if not DrillingActive then
-		DrillingActive = true
-		DrillingInit()
-		DrillingUpdate(callback)
-	end
-end)
+Drilling.Draw = function()
+	DrawScaleformMovieFullscreen(Drilling.Scaleform, 255, 255, 255, 255, 255)
+end
 
-exports("DrillingDraw", function()
-	DrawScaleformMovieFullscreen(DrillingScaleform, 255, 255, 255, 255, 255)
-end)
-
-exports("DrillingHandleControls", function()
-	local last_pos = DrillingPos
+Drilling.HandleControls = function()
+	local last_pos = Drilling.DrillPos
 	if IsControlJustPressed(0, 32) then
-		DrillingPos = math.min(1.0, DrillingPos + 0.01)
+		Drilling.DrillPos = math.min(1.0, Drilling.DrillPos + 0.01)
 	elseif IsControlPressed(0, 32) then
-		DrillingPos =
-			math.min(1.0, DrillingPos + (0.1 * GetFrameTime() / (math.max(0.1, DrillingTemp) * 10)))
+		Drilling.DrillPos =
+			math.min(1.0, Drilling.DrillPos + (0.1 * GetFrameTime() / (math.max(0.1, Drilling.DrillTemp) * 10)))
 	elseif IsControlJustPressed(0, 33) then
-		DrillingPos = math.max(0.0, DrillingPos - 0.01)
+		Drilling.DrillPos = math.max(0.0, Drilling.DrillPos - 0.01)
 	elseif IsControlPressed(0, 33) then
-		DrillingPos = math.max(0.0, DrillingPos - (0.1 * GetFrameTime()))
+		Drilling.DrillPos = math.max(0.0, Drilling.DrillPos - (0.1 * GetFrameTime()))
 	end
 
-	local last_speed = DrillingSpeed
+	local last_speed = Drilling.DrillSpeed
 	if IsControlJustPressed(0, 35) then
-		DrillingSpeed = math.min(1.0, DrillingSpeed + 0.05)
+		Drilling.DrillSpeed = math.min(1.0, Drilling.DrillSpeed + 0.05)
 	elseif IsControlPressed(0, 35) then
-		DrillingSpeed = math.min(1.0, DrillingSpeed + (0.5 * GetFrameTime()))
+		Drilling.DrillSpeed = math.min(1.0, Drilling.DrillSpeed + (0.5 * GetFrameTime()))
 	elseif IsControlJustPressed(0, 34) then
-		DrillingSpeed = math.max(0.0, DrillingSpeed - 0.05)
+		Drilling.DrillSpeed = math.max(0.0, Drilling.DrillSpeed - 0.05)
 	elseif IsControlPressed(0, 34) then
-		DrillingSpeed = math.max(0.0, DrillingSpeed - (0.5 * GetFrameTime()))
+		Drilling.DrillSpeed = math.max(0.0, Drilling.DrillSpeed - (0.5 * GetFrameTime()))
 	end
 
-	if DrillingHoleDepth >= 0.1 and DrillingPos >= DrillingHoleDepth then
-		SetVariableOnSound(DrillingSounds.Sound, "DrillState", 1.0)
+	if Drilling.HoleDepth >= 0.1 and Drilling.DrillPos >= Drilling.HoleDepth then
+		SetVariableOnSound(Drilling.Sounds.Sound, "DrillState", 1.0)
 	end
 
-	local last_temp = DrillingTemp
-	if last_pos < DrillingPos then
-		if DrillingSpeed > 0.4 then
-			if DrillingHoleDepth >= 0.1 and DrillingPos >= DrillingHoleDepth then
-				DrillingTemp =
-					math.min(1.0, DrillingTemp + ((0.05 * GetFrameTime()) * (DrillingSpeed * 10)))
+	local last_temp = Drilling.DrillTemp
+	if last_pos < Drilling.DrillPos then
+		if Drilling.DrillSpeed > 0.4 then
+			if Drilling.HoleDepth >= 0.1 and Drilling.DrillPos >= Drilling.HoleDepth then
+				Drilling.DrillTemp =
+					math.min(1.0, Drilling.DrillTemp + ((0.05 * GetFrameTime()) * (Drilling.DrillSpeed * 10)))
 			end
-			exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+			Scaleforms.PopFloat(Drilling.Scaleform, "SET_DRILL_POSITION", Drilling.DrillPos)
 		else
-			if DrillingPos < 0.1 or DrillingPos < DrillingHoleDepth then
-				exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+			if Drilling.DrillPos < 0.1 or Drilling.DrillPos < Drilling.HoleDepth then
+				Scaleforms.PopFloat(Drilling.Scaleform, "SET_DRILL_POSITION", Drilling.DrillPos)
 			else
-				if DrillingPos >= DrillingHoleDepth then
-					DrillingTemp = math.min(1.0, DrillingTemp + (0.01 * GetFrameTime()))
+				if Drilling.DrillPos >= Drilling.HoleDepth then
+					Drilling.DrillTemp = math.min(1.0, Drilling.DrillTemp + (0.01 * GetFrameTime()))
 				end
-				DrillingPos = last_pos
+				Drilling.DrillPos = last_pos
 			end
 		end
 	else
-		if DrillingPos < DrillingHoleDepth then
-			if DrillingPos < DrillingHoleDepth then
-				DrillingTemp = math.max(
+		if Drilling.DrillPos < Drilling.HoleDepth then
+			if Drilling.DrillPos < Drilling.HoleDepth then
+				Drilling.DrillTemp = math.max(
 					0.0,
-					DrillingTemp - ((0.05 * GetFrameTime()) * math.max(0.005, (DrillingSpeed * 10) / 2))
+					Drilling.DrillTemp - ((0.05 * GetFrameTime()) * math.max(0.005, (Drilling.DrillSpeed * 10) / 2))
 				)
 			end
 		end
 
-		if DrillingPos ~= DrillingHoleDepth then
-			exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_DRILL_POSITION", DrillingPos)
+		if Drilling.DrillPos ~= Drilling.HoleDepth then
+			Scaleforms.PopFloat(Drilling.Scaleform, "SET_DRILL_POSITION", Drilling.DrillPos)
 		end
 	end
 
-	if last_speed ~= DrillingSpeed then
-		exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_SPEED", DrillingSpeed)
+	if last_speed ~= Drilling.DrillSpeed then
+		Scaleforms.PopFloat(Drilling.Scaleform, "SET_SPEED", Drilling.DrillSpeed)
 	end
 
-	if last_temp ~= DrillingTemp then
-		exports['pulsar-games']:ScaleformPopFloat(DrillingScaleform, "SET_TEMPERATURE", DrillingTemp)
+	if last_temp ~= Drilling.DrillTemp then
+		Scaleforms.PopFloat(Drilling.Scaleform, "SET_TEMPERATURE", Drilling.DrillTemp)
 	end
 
-	if DrillingTemp >= 1.0 then
-		HandleDrillingFailure()
-		DrillingResult = false
-		DrillingActive = false
-	elseif DrillingPos >= 1.0 then
-		StopSound(DrillingSounds.Sound)
-		DrillingResult = true
-		DrillingActive = false
+	if Drilling.DrillTemp >= 1.0 then
+		YouFuckingSuck()
+		Drilling.Result = false
+		Drilling.Active = false
+	elseif Drilling.DrillPos >= 1.0 then
+		StopSound(Drilling.Sounds.Sound)
+		Drilling.Result = true
+		Drilling.Active = false
 	end
 
-	DrillingHoleDepth = (DrillingPos > DrillingHoleDepth and DrillingPos or DrillingHoleDepth)
-end)
+	Drilling.HoleDepth = (Drilling.DrillPos > Drilling.HoleDepth and Drilling.DrillPos or Drilling.HoleDepth)
+end
 
-exports("DrillingDisableControls", function()
-	for _, control in ipairs(DrillingDisabledControls) do
+Drilling.DisableControls = function()
+	for _, control in ipairs(Drilling.DisabledControls) do
 		DisableControlAction(0, control, true)
 	end
-end)
+end
 
-exports("DrillingEnableControls", function()
-	for _, control in ipairs(DrillingDisabledControls) do
+Drilling.EnableControls = function()
+	for _, control in ipairs(Drilling.DisabledControls) do
 		DisableControlAction(0, control, true)
 	end
-end)
+end

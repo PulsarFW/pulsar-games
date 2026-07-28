@@ -41,11 +41,10 @@ const getRandomChance = (type, difficulty, extra = null) => {
                 Math.random() * Object.keys(charsets).length - 2,
             );
 
-            let c =
-                charsets[Boolean(extra) ? extra : Object.keys(charsets)[index]];
+            let c = charsets[Boolean(extra) ? extra : Object.keys(charsets)[index]]
 
             if (!c) {
-                c = charsets['alphanumer'];
+                c = charsets["alphanumer"]
             }
             return c;
         default:

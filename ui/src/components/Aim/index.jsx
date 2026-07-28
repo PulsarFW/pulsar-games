@@ -313,7 +313,7 @@ export default ({ game }) => {
                     <div className={classes.countdown}>
                         <small>Attempting Security Bypass</small>
                         <span>
-                            <FontAwesomeIcon icon={['fas', 'spinner']} spin />
+                            <FontAwesomeIcon icon={['fas', 'loader']} spin />
                         </span>
                     </div>
                 ) : process == 1 ? (
@@ -322,7 +322,7 @@ export default ({ game }) => {
                         <span>
                             <FontAwesomeIcon
                                 style={{ color: 'red' }}
-                                icon={['fas', 'circle-exclamation']}
+                                icon={['fas', 'hexagon-exclamation']}
                             />
                         </span>
                     </div>
@@ -363,7 +363,7 @@ export default ({ game }) => {
                                 <span>
                                     <FontAwesomeIcon
                                         color="red"
-                                        icon={['fas', 'circle-xmark']}
+                                        icon={['fas', 'circle-x']}
                                     />
                                 </span>
                             </div>
@@ -390,7 +390,9 @@ export default ({ game }) => {
                                 className={classes.progress}
                                 variant="determinate"
                                 classes={{
+                                    determinate: classes.progressbar,
                                     bar: classes.progressbar,
+                                    bar1: classes.progressbar,
                                 }}
                                 color={
                                     pct < 33

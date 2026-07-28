@@ -6,13 +6,18 @@
 
 # PULSAR-GAMES
 
-### In-world arcade games and interactive entertainment
+### Shared minigame framework — `plsr.Minigame`, scaleform-based skill checks (drilling, etc) other resources trigger
 
 <br/>
 
 ![Lua](https://img.shields.io/badge/Lua_5.4-2C2D72?style=flat-square&logo=lua&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react)
 ![FiveM](https://img.shields.io/badge/FiveM-F40552?style=flat-square)
+
+<br/>
+
+<sub>Enjoy the framework? A coffee helps keep active development, hardening, and support going.</sub>
+
+<a href="https://buymeacoffee.com/pulsarframework"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 180px !important;" /></a>
 
 <br/>
 
@@ -24,13 +29,14 @@
 
 ## Overview
 
-Mini-games system for Pulsar Framework. Provides a framework for in-world arcade cabinets and interactive games with a React UI, configurable game definitions, and extensible game logic.
+Registers `plsr.Minigame` — reusable scaleform-driven skill checks (`client/drill.lua` and others) that other resources trigger for things like safe-cracking or hacking steps, rather than each building its own minigame.
 
 ---
 
 ## Dependencies
 
-- `pulsar-core` — framework core
+- `pulsar_core` — framework core
+- `pulsar_pwnzor` — anti-cheat check loaded alongside every resource
 
 ---
 
