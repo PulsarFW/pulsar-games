@@ -6,12 +6,16 @@
 
 # PULSAR-GAMES
 
-### Shared minigame framework — `plsr.Minigame`, scaleform-based skill checks (drilling, etc) other resources trigger
+### Shared minigame framework — `plsr.Minigame`, 13 NUI skill checks + scaleform drilling other resources trigger
 
 <br/>
 
 ![Lua](https://img.shields.io/badge/Lua_5.4-2C2D72?style=flat-square&logo=lua&logoColor=white)
 ![FiveM](https://img.shields.io/badge/FiveM-F40552?style=flat-square)
+![Svelte](https://img.shields.io/badge/Svelte_5-FF3E00?style=flat-square&logo=svelte&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-000000?style=flat-square&logo=bun&logoColor=white)
 
 <br/>
 
@@ -21,7 +25,7 @@
 
 <br/>
 
-[Overview](#overview) · [Dependencies](#dependencies)
+[Overview](#overview) · [Minigames](#minigames) · [Theming](#theming) · [Dependencies](#dependencies)
 
 </div>
 
@@ -29,7 +33,46 @@
 
 ## Overview
 
-Registers `plsr.Minigame` — reusable scaleform-driven skill checks (`client/drill.lua` and others) that other resources trigger for things like safe-cracking or hacking steps, rather than each building its own minigame.
+Registers `plsr.Minigame` — a single call site (`plsr.Minigame:Play<Type>(...)`) other resources use to trigger a skill check instead of building their own. Two kinds are served:
+
+- **Scaleform drilling** (`client/drill.lua`) — the native GTA drill minigame, used as-is.
+- **13 NUI minigames** (`client/minigame.lua` + the Svelte UI in `ui/`) — Lua rolls the params (including any randomized `chance`/`key`), sends `SHOW_GAME` over NUI, and the UI reports back via `Minigame:Finish` with `state: 0|1|2` (fail/success/perfect). Lua fires `events.onFail`/`onSuccess`/`onPerfect` (string event name or function) with the call's `data` merged in.
+
+---
+
+## Minigames
+
+| Type | Mechanic |
+|---|---|
+| `skillbar` | Stop a filling bar inside a target zone |
+| `round` | Stop a rotating clock-hand inside a target arc |
+| `scanner` | Stop a ping-ponging marker on the correct bar |
+| `sequencer` | Repeat a flashed number sequence |
+| `keypad` | Enter a fixed code on a numpad before time runs out |
+| `scrambler` | Click shuffled buttons in ascending order, limited strikes |
+| `memory` | Memorize highlighted tiles, then click all of them, limited strikes |
+| `aim` | Click growing (optionally drifting) targets, hit a required accuracy |
+| `captcha` | Answer a question about N random-shape/color puzzle pieces |
+| `keymaster` | Press each lane's key as it falls through the target zone |
+| `pattern` | Track a hint glyph as it scrolls through a shifting strip, select it |
+| `icons` | Memorize a shuffling icon grid, then name a picked icon's color |
+| `tracking` | Memorize the order of scattered targets, click them back in order |
+
+All 13 share one NUI contract (`SHOW_GAME`/`FAIL_GAME` in, `Minigame:Finish`/`Minigame:End` out) and one visual language from `ui/src/theme.css`.
+
+---
+
+## Theming
+
+Edit `ui/src/theme.css` for colors and fonts, and `ui/src/config.ts` for sound on/off and volume. Then rebuild:
+
+```
+cd ui
+bun install
+bun run build
+```
+
+Commit the rebuilt `ui/dist/` — that's what actually ships.
 
 ---
 
