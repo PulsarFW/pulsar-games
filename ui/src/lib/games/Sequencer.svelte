@@ -234,8 +234,8 @@
 		background: var(--color-bg-panel-alt);
 	}
 	button.flash {
-		background: var(--color-gold);
-		color: var(--color-bg);
+		background: var(--color-primary);
+		color: var(--color-text);
 	}
 	.results {
 		width: 100%;
@@ -244,7 +244,7 @@
 		inset: 0;
 		margin: auto;
 		padding: 30px;
-		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+		background: var(--color-bg-overlay);
 		display: flex;
 		align-items: center;
 		justify-content: center;

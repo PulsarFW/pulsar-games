@@ -195,7 +195,7 @@
 		border-radius: calc(var(--radius) - 1px);
 	}
 	.bar.valid {
-		background: color-mix(in srgb, var(--color-info) 60%, black);
+		background: var(--color-info-dark);
 	}
 	.bar.gold {
 		background: var(--color-gold);
@@ -210,13 +210,16 @@
 	.hotkey {
 		font-size: 50px;
 		font-family: var(--font-lcd);
-		color: var(--color-bg);
+		color: var(--color-text);
 		height: fit-content;
 		width: fit-content;
 		position: absolute;
 		inset: 0;
 		margin: auto;
 		text-shadow: 0 0 5px var(--color-bg-panel-alt);
+	}
+	.bar.gold .hotkey {
+		color: var(--color-bg);
 	}
 	.timer {
 		text-align: center;
@@ -233,7 +236,7 @@
 		inset: 0;
 		margin: auto;
 		padding: 30px;
-		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+		background: var(--color-bg-overlay);
 		display: flex;
 		align-items: center;
 		justify-content: center;

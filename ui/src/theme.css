@@ -1,12 +1,9 @@
 /*
 	Pulsar Games - THEME FILE
 
-	Full-screen transparent overlay, so html/body/#app default to pointer-events: none,
-	individual minigames opt back in with pointer-events: auto where they need clicks.
-
 	--font-lcd is a games-specific token layered on top of the shared set below, for
 	digital-readout style displays (Keypad/Scanner numeric faces) — see config.ts for
-	sound defaults.
+	sound defaults
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap');
@@ -22,6 +19,7 @@
 	--color-bg: #060608;
 	--color-bg-panel: #0e0d13;
 	--color-bg-panel-alt: #141220;
+	--color-bg-overlay: rgba(6, 6, 8, 0.7);
 
 	/* ---- Brand purple ---- */
 	--color-primary: #8b5cf6;
@@ -42,7 +40,8 @@
 	--color-warning: #f0a848;
 	--color-error: #e5484d;
 	--color-error-dark: #7a2323;
-	--color-info: #5ba3e0;
+	--color-info: #8b5cf6;
+	--color-info-dark: #4c2d99;
 
 	/* ---- Games-specific: "perfect" tier accent (Scanner's gold zone) ---- */
 	--color-gold: #ffd700;

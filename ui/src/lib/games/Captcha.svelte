@@ -364,7 +364,7 @@
 		inset: 0;
 		margin: auto;
 		padding: 30px;
-		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+		background: var(--color-bg-overlay);
 		display: flex;
 		align-items: center;
 		justify-content: center;
